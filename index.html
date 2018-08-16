@@ -47,6 +47,7 @@
                    data-pagination="false">
                 <thead>
                 <tr>
+                    <th data-field="" data-formatter="idFormatter">序号</th>
                     <th data-field="symbol" >币名</th>
                     <th data-field="priceCny" >当前价格</th>
                     <th data-field="issuePriceCny" >发行价格</th>
@@ -152,6 +153,10 @@
         });
 
 
+    }
+
+    function idFormatter(value, item, index) {
+        return index + 1;
     }
 
     function diffFormatter(value, n) {
