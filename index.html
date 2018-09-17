@@ -9,6 +9,7 @@
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-table/1.10.0/bootstrap-table.css" rel="stylesheet" />
     <link href="css/default.css" rel="stylesheet">
+    <link href="css/app.css" rel="stylesheet">
 </head>
 <body>
 
@@ -48,10 +49,10 @@
                 <thead>
                 <tr>
                     <th data-field="" data-formatter="idFormatter">序号</th>
-                    <th data-field="symbol" >币名</th>
-                    <th data-field="issuePriceCny" >发行价格</th>
-                    <th data-field="priceCny" >当前价格</th>
-                    <th data-field="percent" data-align="right" data-formatter="percentFormatter">24H涨幅</th>
+                    <th data-field="symbol"  data-sortable="true" >币名</th>
+                    <th data-field="issuePriceCny"  data-sortable="true" >发行价格</th>
+                    <th data-field="priceCny"  data-sortable="true" >当前价格</th>
+                    <th data-field="percent"  data-sortable="true" data-align="right" data-formatter="percentFormatter">24H涨幅</th>
                     <th data-field="diff" data-sortable="true" data-formatter="diffFormatter">至今涨幅</th>
                 </tr>
                 </thead>
