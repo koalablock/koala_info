@@ -49,8 +49,9 @@
                 <tr>
                     <th data-field="" data-formatter="idFormatter">序号</th>
                     <th data-field="symbol" >币名</th>
-                    <th data-field="priceCny" >当前价格</th>
                     <th data-field="issuePriceCny" >发行价格</th>
+                    <th data-field="priceCny" >当前价格</th>
+                    <th data-field="percent" data-align="right" data-formatter="percentFormatter">24H涨幅</th>
                     <th data-field="diff" data-sortable="true" data-formatter="diffFormatter">至今涨幅</th>
                 </tr>
                 </thead>
@@ -95,62 +96,64 @@
             // }
             usdRate = parseFloat(rates.split(',')[1]).toFixed(2);
 
-            // 获取btc价格
-            $.get(binanceApi + '/ticker/24hr?symbol=BTCUSDT', function (ticker) {
-                btcPrice = ticker.bidPrice
+            // 获取当前价格
+            $.get(binanceApi + '/ticker/24hr', function (res) {
+                var coins = [];
+                // btc价格
+                for (var i = 0; i < res.length; i++) {
+                    var item = res[i];
+                    if (item.symbol === 'BTCUSDT') btcPrice = parseFloat(item.lastPrice)
+                }
 
-                // 获取当前价格
-                $.get(binanceApi + '/ticker/allPrices', function (res) {
-                    var coins = [];
-                    for (var i = 0; i < res.length; i++) {
-                        var item = res[i];
-                        var symbolR = item.symbol;
+                for (var i = 0; i < res.length; i++) {
+                    var item = res[i];
+                    var symbolR = item.symbol;
+                    var price = item.lastPrice;
 
-                        if (symbolR === 'BTCUSDT') btcPrice = parseFloat(item.price)
+                    // if (symbolR === 'BTCUSDT') btcPrice = parseFloat(price)
 
-                        if (symbolR.indexOf('BTC') <= 0) continue
+                    if (symbolR.indexOf('BTC') <= 0) continue
 
-                        var symbol = symbolR.split('BTC')[0]
+                    var symbol = symbolR.split('BTC')[0]
 
-                        if (symbol in issuePrices) {
-                            var data = {
-                                symbol: symbol,
-                                price: parseFloat(item.price),
-                                priceUsd: (parseFloat(item.price) * btcPrice).toFixed(4),
-                                priceCny: (parseFloat(item.price) * btcPrice * usdRate).toFixed(4),
-                                issuePriceUsd: issuePrices[symbol].toFixed(4),
-                                issuePriceCny: (issuePrices[symbol] * usdRate).toFixed(4),
-                                diff: parseFloat((parseFloat(item.price) * btcPrice / issuePrices[symbol]).toFixed(2))
-                            };
-                            coins.push(data);
+                    if (symbol in issuePrices) {
+                        var data = {
+                            symbol: symbol,
+                            price: parseFloat(price),
+                            priceUsd: (parseFloat(price) * btcPrice).toFixed(4),
+                            priceCny: (parseFloat(price) * btcPrice * usdRate).toFixed(4),
+                            issuePriceUsd: issuePrices[symbol].toFixed(4),
+                            issuePriceCny: (issuePrices[symbol] * usdRate).toFixed(4),
+                            diff: parseFloat((parseFloat(price) * btcPrice / issuePrices[symbol]).toFixed(2)),
+                            percent: parseFloat(item.priceChangePercent).toFixed(2)
+                        };
+                        coins.push(data);
+                    }
+
+
+                }
+
+                try {
+                    coins = coins.sort(function (a, b) {
+                        var sort = params.data.sort;
+                        if (params.data.order == 'asc') {
+                            return a[sort] - b[sort];
+                        } else {
+                            return b[sort] - a[sort];
                         }
 
+                    });
+                } catch (e) {
+                    console.error(e);
+                }
 
-                    }
-
-                    try {
-                        coins = coins.sort(function (a, b) {
-                            var sort = params.data.sort;
-                            if (params.data.order == 'asc') {
-                                return a[sort] - b[sort];
-                            } else {
-                                return b[sort] - a[sort];
-                            }
-
-                        });
-                    } catch (e) {
-                        console.error(e);
-                    }
-
-                    var data = {rows: coins};
-                    params.success(data);
-                });
-
-
+                var data = {rows: coins};
+                params.success(data);
             });
 
 
         });
+
 
 
     }
@@ -166,6 +169,16 @@
             return '<span style="color: red">' + value + '</span>';
         }
         return value;
+    }
+
+    function percentFormatter(value, n) {
+        percent = value + '%';
+        if (value > 0) {
+            return '<span style="color: green">' + percent + '</span>';
+        } else {
+            return '<span style="color: red">' + percent + '</span>';
+        }
+        return percent;
     }
 
 
