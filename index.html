@@ -50,10 +50,13 @@
                 <tr>
                     <th data-field="" data-formatter="idFormatter">序号</th>
                     <th data-field="symbol"  data-sortable="true" >币名</th>
+                    <th data-field="diff" data-sortable="true" data-formatter="diffFormatter">众筹幅</th>
+                    <th data-field="percent"  data-sortable="true" data-align="right" data-formatter="percentFormatter">24H</th>
+                    <th data-field="quoteVolume"  data-sortable="true" data-align="right">成交</th>
                     <th data-field="issuePriceCny"  data-sortable="true" >发行价格</th>
                     <th data-field="priceCny"  data-sortable="true" >当前价格</th>
-                    <th data-field="percent"  data-sortable="true" data-align="right" data-formatter="percentFormatter">24H涨幅</th>
-                    <th data-field="diff" data-sortable="true" data-formatter="diffFormatter">至今涨幅</th>
+
+
                 </tr>
                 </thead>
             </table>
@@ -120,6 +123,7 @@
                     if (symbol in issuePrices) {
                         var data = {
                             symbol: symbol,
+                            quoteVolume: parseInt(item.quoteVolume),
                             price: parseFloat(price),
                             priceUsd: (parseFloat(price) * btcPrice).toFixed(4),
                             priceCny: (parseFloat(price) * btcPrice * usdRate).toFixed(4),
